@@ -8,9 +8,11 @@ const Quotes = () => {
   const [minutes, setMinutes] = useState(''); // State to store user input time in minutes
   const [isVisible, setIsVisible] = useState(true); // State to control visibility
   const [remainingTime, setRemainingTime] = useState(0); // State for remaining time in seconds
+  const [showPopup, setShowPopup] = useState(false); // State to control popup visibility
 
   useEffect(() => {
     getQuote();
+    requestNotificationPermission(); // Request permission for notifications
   }, []);
 
   const getQuote = () => {
@@ -43,6 +45,8 @@ const Quotes = () => {
           if (prev <= 1) {
             clearInterval(interval); // Clear the interval when time is up
             setIsVisible(false); // Make component invisible when time is up
+            showNotification(); // Show notification
+            setShowPopup(true); // Show popup modal
             return 0; // Prevent negative seconds
           }
           return prev - 1; // Decrease the remaining time
@@ -53,11 +57,33 @@ const Quotes = () => {
     }
   };
 
+  // Request notification permission
+  const requestNotificationPermission = () => {
+    if ("Notification" in window && Notification.permission !== "granted") {
+      Notification.requestPermission();
+    }
+  };
+
+  // Show notification when time is up
+  const showNotification = () => {
+    if ("Notification" in window && Notification.permission === "granted") {
+      new Notification("Time's up!", {
+        body: `Your timer has finished!`,
+        icon: '/path/to/icon.png' // Optional: Add a custom icon
+      });
+    }
+  };
+
   // Format remaining time in MM:SS
   const formatTime = (seconds) => {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
     return `${mins}:${secs < 10 ? '0' : ''}${secs}`; // Ensures seconds are always two digits
+  };
+
+  // Close the modal popup
+  const closeModal = () => {
+    setShowPopup(false);
   };
 
   return (
@@ -107,6 +133,22 @@ const Quotes = () => {
           Start Timer
         </button>
       </div>
+
+      {/* Modal Popup */}
+      {showPopup && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
+          <div className="bg-white p-8 rounded-lg shadow-lg text-center">
+            <h2 className="text-2xl font-bold mb-4">Time's Up!</h2>
+            <p className="text-lg mb-6">Your timer has finished.</p>
+            <button 
+              onClick={closeModal} 
+              className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-700"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
