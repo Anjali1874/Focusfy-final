@@ -23,7 +23,7 @@ function Services() {
   ];
 
   return (
-    <div className="services-container flex flex-col items-center justify-center py-10">
+    <div className="services-container flex flex-col items-center justify-center py-10 mt-20">
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
         {servicesData.map((service, index) => (
           <ServiceCard

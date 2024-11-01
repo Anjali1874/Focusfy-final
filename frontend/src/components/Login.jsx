@@ -1,119 +1,76 @@
-import React from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { useForm } from "react-hook-form";
-import axios from "axios";
-import toast from "react-hot-toast";
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import { useAuth } from '../context/authProvider';
 
-function Login() {
-  const navigate = useNavigate(); // Use navigate hook to programmatically navigate
+const Login = () => {
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [error, setError] = useState('');
+    const navigate = useNavigate();
+    const { setAuthUser } = useAuth();
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm();
-
-  const onSubmit = async (data) => {
-    const userInfo = {
-      email: data.email,
-      password: data.password,
+    const handleLogin = async (e) => {
+        e.preventDefault();
+        setError('');
+    
+        try {
+            const response = await axios.post('http://localhost:4125/api/auth/login', {
+                email,
+                password,
+            });
+    
+            if (response.data.status === 'success') {
+                // Save token in localStorage and context
+                const token = response.data.token;
+                localStorage.setItem('authToken', token);
+                setAuthUser(token); // Store token in context if needed
+                navigate('/services');
+            } else {
+                setError('Invalid username or password');
+            }
+        } catch (err) {
+            setError('An error occurred. Please try again later.');
+        }
     };
-    await axios
-      .post("http://localhost:4001/user/login", userInfo)
-      .then((res) => {
-        console.log(res.data);
-        if (res.data) {
-          toast.success("Logged in Successfully");
-          document.getElementById("my_modal_3").close();
-          setTimeout(() => {
-            window.location.reload();
-            localStorage.setItem("Users", JSON.stringify(res.data.user));
-          }, 1000);
-        }
-      })
-      .catch((err) => {
-        if (err.response) {
-          console.log(err);
-          toast.error("Error: " + err.response.data.message);
-          setTimeout(() => {}, 2000);
-        }
-      });
-  };
+    
 
-  return (
-    <div>
-      <dialog id="my_modal_3" className="modal">
-        <div className="modal-box">
-          <form onSubmit={handleSubmit(onSubmit)}>
-            {/* Close button */}
-            <Link
-              to="/"
-              className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2"
-              onClick={() => document.getElementById("my_modal_3").close()}
-            >
-              ✕
-            </Link>
-
-            <h3 className="font-bold text-lg">Login</h3>
-
-            {/* Email */}
-            <div className="mt-4 space-y-2">
-              <span>Email</span>
-              <br />
-              <input
-                type="email"
-                placeholder="Enter your email"
-                className="w-80 px-3 py-1 border rounded-md outline-none"
-                {...register("email", { required: true })}
-              />
-              {errors.email && (
-                <span className="text-sm text-red-500">
-                  This field is required
-                </span>
-              )}
+    return (
+        <div className="flex items-center justify-center min-h-screen bg-gray-100">
+            <div className="bg-white shadow-lg rounded-lg p-8 max-w-sm w-full transform transition-transform duration-300 hover:scale-105">
+                <h2 className="text-2xl font-bold text-center mb-6">Login</h2>
+                {error && <p className="text-red-500 text-sm text-center mb-4">{error}</p>}
+                <form onSubmit={handleLogin}>
+                    <div className="mb-4">
+                        <input
+                            type="text"
+                            placeholder="Email"
+                            className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                            required
+                        />
+                    </div>
+                    <div className="mb-4">
+                        <input
+                            type="password"
+                            placeholder="Password"
+                            className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            required
+                        />
+                    </div>
+                    <button
+                        type="submit"
+                        className="w-full bg-blue-500 text-white p-2 rounded-md hover:bg-blue-600 transition duration-300"
+                    >
+                        Login
+                    </button>
+                </form>
             </div>
-
-            {/* Password */}
-            <div className="mt-4 space-y-2">
-              <span>Password</span>
-              <br />
-              <input
-                type="password"
-                placeholder="Enter your password"
-                className="w-80 px-3 py-1 border rounded-md outline-none"
-                {...register("password", { required: true })}
-              />
-              {errors.password && (
-                <span className="text-sm text-red-500">
-                  This field is required
-                </span>
-              )}
-            </div>
-
-            {/* Buttons */}
-            <div className="flex justify-around mt-6">
-              <button className="bg-pink-500 text-white rounded-md px-3 py-1 hover:bg-pink-700 duration-200">
-                Login
-              </button>
-              <p>
-                Not registered?{" "}
-                <Link
-                  to="/signup"
-                  className="underline text-blue-500 cursor-pointer"
-                  onClick={() => {
-                    document.getElementById("my_modal_3").close(); // Close modal on signup
-                    navigate("/signup"); // Navigate to signup page
-                  }}
-                >
-                  Signup
-                </Link>
-              </p>
-            </div>
-          </form>
         </div>
-      </dialog>
-    </div>
-  );
-}
+    );
+};
 
 export default Login;

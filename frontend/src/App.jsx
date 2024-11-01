@@ -9,12 +9,12 @@ import Login from "./components/Login";
 import Signup from "./components/Signup";
 import { useAuth } from "./context/authProvider";
 import { Toaster } from "react-hot-toast";
-import AOS from "aos"; // Import AOS for animations
+import AOS from "aos";
 import "aos/dist/aos.css";
 import "./App.css";
 
 function App() {
-  const [authUser] = useAuth();
+  const { authUser } = useAuth();
 
   useEffect(() => {
     AOS.init({ duration: 1000 });
@@ -24,17 +24,13 @@ function App() {
     <div className="bg-fixed flex flex-col dark:text-white">
       <Navbar />
       <Toaster position="top-right" reverseOrder={false} />
-      
+
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/about" element={<About />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
-
-        <Route 
-          path="/services" 
-          element={authUser ? <Service /> : <Navigate to="/signup" replace />} 
-        />
+        <Route path="/services" element={authUser ? <Service /> : <Navigate to="/login" replace />} />
       </Routes>
 
       <Footer />
