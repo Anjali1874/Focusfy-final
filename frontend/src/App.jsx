@@ -16,6 +16,7 @@ import WebcamControl from "./components/WebcamControl";
 import Quotes from "./components/QuotesGenerator";
 import Timetable from "./components/Timetable";
 import ProfilePage from "./components/ProfilePage";
+import RealTimeGraph from "./components/RealTimeGraph";
 
 function App() {
   const { authUser } = useAuth();
@@ -39,6 +40,7 @@ function App() {
         <Route path="/timetable" element={<Timetable />} />
         <Route path="/services" element={authUser ? <Service /> : <Navigate to="/login" replace />} />
         <Route path="/profile" element={<ProfilePage />} />
+        <Route path="/graph" element={<RealTimeGraph/>  } />
       </Routes>
 
       <Footer />
