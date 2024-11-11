@@ -12,6 +12,10 @@ import { Toaster } from "react-hot-toast";
 import AOS from "aos";
 import "aos/dist/aos.css";
 import "./App.css";
+import WebcamControl from "./components/WebcamControl";
+import Quotes from "./components/QuotesGenerator";
+import Timetable from "./components/Timetable";
+import ProfilePage from "./components/ProfilePage";
 
 function App() {
   const { authUser } = useAuth();
@@ -27,10 +31,14 @@ function App() {
 
       <Routes>
         <Route path="/" element={<Home />} />
+        <Route path="/webcam" element={<WebcamControl />} />
         <Route path="/about" element={<About />} />
+        <Route path="/quotes" element={<Quotes />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
+        <Route path="/timetable" element={<Timetable />} />
         <Route path="/services" element={authUser ? <Service /> : <Navigate to="/login" replace />} />
+        <Route path="/profile" element={<ProfilePage />} />
       </Routes>
 
       <Footer />

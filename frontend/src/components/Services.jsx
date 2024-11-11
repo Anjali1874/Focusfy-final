@@ -7,18 +7,19 @@ function Services() {
       title: 'Personalized Study Plans',
       description: 'Tailored study plans to enhance your learning experience based on your focus levels and preferences.',
       imgSrc: 'https://designtemplate.tech/Online-Learning-Boy-Unique-3D-Model-Illustration-700.webp',
-      
+      link:"/timetable"
     },
     {
       title: 'Real-Time Feedback',
       description: 'Get immediate feedback on your study habits to help you stay on track and improve productivity.',
       imgSrc: 'https://curiousminds.info/wp-content/uploads/2024/06/Surprising-Habits-of-Highly-Curious-People-That-Will-Change-Your-Life.jpg', // Updated 3D image
-      
+      link:"/webcam",
     },
     {
-      title: 'Performance Tracking',
+      title: 'Quote Charge',
       description: 'Track your progress over time and make adjustments to your study strategies for optimal results.',
       imgSrc: 'https://info.ehl.edu/hubfs/employee-performance-improvement.jpeg', // Updated 3D image
+      link:"/quotes"
     },
   ];
 
@@ -31,6 +32,7 @@ function Services() {
             title={service.title}
             description={service.description}
             imgSrc={service.imgSrc}
+            link= {service.link}
           />
         ))}
       </div>

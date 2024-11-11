@@ -12,24 +12,27 @@ const Login = () => {
 
     const handleLogin = async (e) => {
         e.preventDefault();
-        setError('');
+        setError('');  // Reset any previous error
     
         try {
             const response = await axios.post('http://localhost:4125/api/auth/login', {
                 email,
                 password,
-            });
-    
-            if (response.data.status === 'success') {
-                // Save token in localStorage and context
+            }); 
+            if (response.status === 200) {  // Check for 200 status code 
                 const token = response.data.token;
-                localStorage.setItem('authToken', token);
-                setAuthUser(token); // Store token in context if needed
+                localStorage.setItem('authToken', token); // Save token to localStorage
+                setAuthUser(token);
+                // Navigate to the 'services' page
+                alert("Succesfully Logged in!!")
                 navigate('/services');
             } else {
-                setError('Invalid username or password');
+                // In case the server response is not 200 but some other status code
+                alert("error");
+                setError(response.data.message || 'Invalid login credentials');
             }
         } catch (err) {
+            // Handle errors such as network issues or server failures
             setError('An error occurred. Please try again later.');
         }
     };
@@ -43,7 +46,7 @@ const Login = () => {
                 <form onSubmit={handleLogin}>
                     <div className="mb-4">
                         <input
-                            type="text"
+                            type="email"
                             placeholder="Email"
                             className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                             value={email}
