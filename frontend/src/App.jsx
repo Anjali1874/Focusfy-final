@@ -17,6 +17,7 @@ import Quotes from "./components/QuotesGenerator";
 import Timetable from "./components/Timetable";
 import ProfilePage from "./components/ProfilePage";
 import RealTimeGraph from "./components/RealTimeGraph";
+import Contact from "./components/Contact";
 
 function App() {
   const { authUser } = useAuth();
@@ -27,7 +28,6 @@ function App() {
 
   return (
     <div className="bg-fixed flex flex-col dark:text-white">
-      <Navbar />
       <Toaster position="top-right" reverseOrder={false} />
 
       <Routes>
@@ -41,6 +41,7 @@ function App() {
         <Route path="/services" element={authUser ? <Service /> : <Navigate to="/login" replace />} />
         <Route path="/profile" element={<ProfilePage />} />
         <Route path="/graph" element={<RealTimeGraph/>  } />
+        <Route path = '/contact' element={<Contact />} />
       </Routes>
 
       <Footer />

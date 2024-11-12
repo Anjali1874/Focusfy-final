@@ -1,3 +1,4 @@
+# better than above but posture problem
 from flask import Flask, Response, jsonify, request
 from flask_cors import CORS
 from datetime import datetime
@@ -5,15 +6,14 @@ import pymongo
 import posture_detector  # Ensure this module is implemented correctly
 import time
 import threading
-from playsound import playsound
-from plyer import notification
+from playsound import playsound  # Import playsound to play audio
 
 app = Flask(__name__)
 CORS(app)
 
 # MongoDB Client Setup
 client = pymongo.MongoClient("mongodb://localhost:27017/")
-db = client['webcam_db']
+db = client['FOCUSFY']
 timing_collection = db['timing']
 
 # Global Variables
@@ -22,21 +22,6 @@ current_blink_count = 0
 posture_data = []  # To store posture data over time
 focus_percentage = 100  # Start with a full score
 video_thread = None  # Keep track of the video processing thread
-
-def send_notification(title="Low Focus Alert", message="Focus is below 50%. Keep going!", duration=10):
-    """
-    Sends a desktop notification.
-
-    Parameters:
-    - title: The title of the notification.
-    - message: The message to display in the notification.
-    - duration: The time to display the notification in seconds.
-    """
-    notification.notify(
-        title=title,
-        message=message,
-        timeout=duration  # Duration in seconds
-    )
 
 def log_interval_data(start_time):
     global current_blink_count, posture_data, focus_percentage
@@ -88,7 +73,6 @@ def start_webcam():
                 if not current_session_id:
                     break  # Stop processing if the session is no longer active
 
-                # Update the blink count from the frame processing
                 current_blink_count = blink_count
                 posture_object = {
                     "time": time.time(),
@@ -100,19 +84,21 @@ def start_webcam():
                 # Adjust focus percentage based on posture and blink count
                 if posture_status == "Poor Posture":
                     focus_percentage = max(focus_percentage - 1, 0)  # Deduct focus percentage for poor posture
-                elif posture_status == "Good Posture" :
-                    focus_percentage = min(100, focus_percentage + 0.5)  # Slightly recover focus for good posture
                 else:
-                    focus_percentage=focus_percentage                
+                    focus_percentage = min(100, focus_percentage + 0.5)  # Slightly recover focus for good posture
+
+                # Check if focus percentage falls below 50% and play sound
+                if focus_percentage < 50:
+                    playsound('alert.mp3')  # Play alert sound
 
                 # Update MongoDB with the new blink count and focus percentage
                 timing_collection.update_one(
                     {"_id": current_session_id},
                     {
                         "$set": {
-                            "blink_count": current_blink_count,  # Update blink count
-                            "posture_status": posture_data,  # Update posture data
-                            "focus_percentage": focus_percentage  # Update focus percentage
+                            "blink_count": current_blink_count,
+                            "posture_status": posture_data,
+                            "focus_percentage": focus_percentage
                         }
                     }
                 )
@@ -159,8 +145,7 @@ def stop_webcam():
                     {
                         "$set": {
                             "end_time": datetime.now(),
-                            "focus_percentage": overall_focus_percentage,  # Store overall focus percentage
-                            "blink_count": current_blink_count  # Ensure the final blink count is stored
+                            "focus_percentage": overall_focus_percentage  # Store overall focus percentage
                         }
                     }
                 )
@@ -205,7 +190,7 @@ def calculate_focus(blink_count, posture_data, interval_data):
     """
 
     # Constants
-    BLINKS_REQUIRED_PER_SECOND = 0.28  # 0.28 blinks required per second for good focus as 17 for minute
+    BLINKS_REQUIRED_PER_SECOND = 0.5  # 0.5 blinks required per second for good focus
     WEIGHT_BLINK_SCORE = 0.3          # Weighting factor for blink score
     WEIGHT_POSTURE_SCORE = 0.7         # Weighting factor for posture score
 
@@ -229,8 +214,7 @@ def calculate_focus(blink_count, posture_data, interval_data):
 
     # Calculate overall focus percentage using weighted average
     focus_percentage = (WEIGHT_BLINK_SCORE * blink_score) + (WEIGHT_POSTURE_SCORE * posture_score)
-    
-    
+
     # Ensure focus percentage does not exceed 100
     return round(min(focus_percentage, 100), 2)
 

@@ -56,6 +56,21 @@ const Quotes = () => {
   };
 
   return (
+    <><div className="flex justify-between items-center p-4 bg-transparent fixed top-0 left-0 right-0 z-10 shadow-md">
+    <h1 className="text-xl font-bold text-white">FocusFy</h1>
+    <div className="flex items-center space-x-4">
+      <Link to="/" className="text-white font-semibold bg-transparent p-2 hover:bg-gray-700 rounded-full">
+        Back to Home
+      </Link>
+      <Link to="/profile" className="p-2 bg-gray-700 rounded-full">
+        <img
+          src="https://upload.wikimedia.org/wikipedia/commons/4/47/PNG_transparency_demonstration_1.png" // Profile icon URL, change as needed
+          alt="Profile"
+          className="w-6 h-6"
+        />
+      </Link>
+    </div>
+  </div>
     <div className="min-h-screen mt-20 flex flex-col items-center justify-center bg-yellow-300 bg-transparent p-6">
       {isVisible && (
         <div id="quote-box" className="bg-white/60 dark:bg-gray-800/60 backdrop-blur-lg p-8 rounded-3xl shadow-2xl max-w-lg text-center transform transition-all hover:scale-105 duration-300">
@@ -101,6 +116,7 @@ const Quotes = () => {
         </button>
       </Link>
     </div>
+    </>
   );
 };
 

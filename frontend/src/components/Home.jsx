@@ -1,6 +1,7 @@
 import React from "react";
 import RunningText from "./RunningText";
 import About from "./About";
+import Navbar from './Navbar'
 
 const quotes = [
   "Let your tomorrow thank your today.",
@@ -14,6 +15,8 @@ function Home() {
   const randomQuote = quotes[Math.floor(Math.random() * quotes.length)];
 
   return (
+    <><Navbar />
+  
     <div
   className="flex flex-col items-center text-center min-h-screen bg-cover bg-center bg-no-repeat w-100vw"
   style={{
@@ -40,6 +43,7 @@ function Home() {
         </button>
         <br /><br /><br />
     </div>
+    </>
   );
 }
 
