@@ -74,7 +74,7 @@ def check_lighting_condition(frame):
     brightness = np.mean(gray)
     
     # Print brightness level to terminal
-    print(f"Current brightness level: {brightness}")
+    # print(f"Current brightness level: {brightness}")
     
     # Check for low lighting condition
     if brightness < brightness_threshold:
